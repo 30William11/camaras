@@ -140,7 +140,7 @@ const saveQuote = async () => {
 
   loading.value = false
   if (res.success) {
-    router.push({ name: 'quotes.index' })
+    router.push({ name: 'app.quotes.index' })
   } else {
     alertService.showDanger('Error al guardar: ' + res.error)
   }

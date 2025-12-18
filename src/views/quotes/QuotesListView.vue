@@ -18,11 +18,11 @@ onMounted(() => {
 })
 
 const createQuote = () => {
-  router.push({ name: 'quotes.create' })
+  router.push({ name: 'app.quotes.create' })
 }
 
 const editQuote = (id) => {
-  router.push({ name: 'quotes.edit', params: { id } })
+  router.push({ name: 'app.quotes.edit', params: { id } })
 }
 
 const deleteQuote = async (id) => {

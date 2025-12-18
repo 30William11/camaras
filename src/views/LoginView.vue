@@ -31,7 +31,7 @@ const onLogin = async () => {
     await authStore.login(email.value, password.value)
     logInfo("Login correcto desde Firebase")
     logDebug("Usuario autenticado, navegando al dashboard")
-    router.push({ name: 'dashboard' })
+    router.push({ name: 'app.dashboard' })
   } catch (e) {
     logError("ERROR LOGIN FIREBASE", e)
     error.value = 'Correo o contraseña incorrectos.'

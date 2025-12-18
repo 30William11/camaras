@@ -25,9 +25,9 @@ const menuItems = computed(() => {
   logDebug('Sidebar: reconstruyendo menú para role =', role)
 
   const items = [
-    { name: 'Dashboard', icon: '📊', to: { name: 'dashboard' } },
-    { name: 'Cotizaciones', icon: '📄', to: { name: 'quotes.index' } },
-    { name: 'Clientes', icon: '📇', to: { name: 'clients.index' } },
+    { name: 'Dashboard', icon: '📊', to: { name: 'app.dashboard' } },
+    { name: 'Cotizaciones', icon: '📄', to: { name: 'app.quotes.index' } },
+    { name: 'Clientes', icon: '📇', to: { name: 'app.clients.index' } },
   ]
 
   // Productos: admin y superadmin (con submenú)
@@ -36,9 +36,9 @@ const menuItems = computed(() => {
       name: 'Productos',
       icon: '📦',
       submenu: [
-        { name: 'Productos', to: { name: 'products.index' } },
-        { name: 'Categorías', to: { name: 'categories.index' } },
-        { name: 'Unidades', to: { name: 'units.index' } }
+        { name: 'Productos', to: { name: 'app.products.index' } },
+        { name: 'Categorías', to: { name: 'app.categories.index' } },
+        { name: 'Unidades', to: { name: 'app.units.index' } }
       ]
     })
     logDebug('Sidebar: añadido item Productos con submenú')
@@ -46,13 +46,13 @@ const menuItems = computed(() => {
 
   // Servicios: admin y superadmin
   if (role === 'admin' || role === 'superadmin') {
-    items.push({ name: 'Servicios', icon: '🛠️', to: { name: 'services.index' } })
+    items.push({ name: 'Servicios', icon: '🛠️', to: { name: 'app.services.index' } })
     logDebug('Sidebar: añadido item Servicios')
   }
 
   // Usuarios: solo superadmin
   if (role === 'superadmin') {
-    items.push({ name: 'Usuarios', icon: '👥', to: { name: 'users.index' } })
+    items.push({ name: 'Usuarios', icon: '👥', to: { name: 'app.users.index' } })
     logDebug('Sidebar: añadido item Usuarios')
   }
 
@@ -75,7 +75,7 @@ const toggleSidebar = () => {
 const logout = async () => {
   logInfo('Sidebar: cerrando sesión')
   await authStore.logout()
-  router.push({ name: 'login' })
+  router.push({ name: 'app.login' })
 }
 
 // Si el perfil cambia (por ejemplo, después de init), logueamos el nuevo rol
