@@ -12,10 +12,50 @@ const props = defineProps({
 const productsStore = useProductsStore()
 const authStore = useAuthStore()
 
+// Global Exchange Rate
+const globalExchangeRate = ref(3.750) // Default T.C.
+
+// Load T.C. from localStorage on mount
+const loadExchangeRate = () => {
+  const saved = localStorage.getItem('globalExchangeRate')
+  if (saved) {
+    globalExchangeRate.value = parseFloat(saved)
+  }
+}
+
+// Save T.C. to localStorage when it changes
+const saveExchangeRate = () => {
+  // Ensure we have a valid number with 3 decimals
+  const value = Number(globalExchangeRate.value)
+  if (!isNaN(value) && value >= 0) {
+    // Round to 3 decimals
+    globalExchangeRate.value = Math.round(value * 1000) / 1000
+    localStorage.setItem('globalExchangeRate', globalExchangeRate.value.toString())
+    console.log('💱 T.C. actualizado:', globalExchangeRate.value.toFixed(3))
+  }
+}
+
+// Load on component mount
+loadExchangeRate()
+
 // Pagination and filtering state
 const searchQuery = ref('')
 const currentPage = ref(1)
-const pageSize = ref(25)
+const pageSize = ref(10) // Default page size
+
+// Sorting state
+const sortColumn = ref('name') // Default sort by name
+const sortDirection = ref('asc') // 'asc' or 'desc'
+
+// Toggle sort
+const toggleSort = (column) => {
+  if (sortColumn.value === column) {
+    sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    sortColumn.value = column
+    sortDirection.value = 'asc'
+  }
+}
 
 const products = computed(() => productsStore.list)
 const isAdmin = computed(() => {
@@ -23,19 +63,71 @@ const isAdmin = computed(() => {
   return role === 'admin' || role === 'superadmin'
 })
 
-// Filtered products based on search
-const filteredProducts = computed(() => {
-  if (!searchQuery.value) return products.value
+// Products with calculated prices based on global T.C.
+const productsWithCalculations = computed(() => {
+  return products.value.map(product => {
+    const priceUsd = Number(product.priceUsd) || 0
+    const salePrice = Number(product.price) || 0
 
-  const query = searchQuery.value.toLowerCase()
-  return products.value.filter(product => {
-    return (
-      product.name?.toLowerCase().includes(query) ||
-      product.sku?.toLowerCase().includes(query) ||
-      product.category?.toLowerCase().includes(query) ||
-      product.description?.toLowerCase().includes(query)
-    )
+    // Calculate purchase price in soles (USD * T.C.)
+    const purchasePrice = priceUsd * globalExchangeRate.value
+
+    // Calculate profit percentage
+    const profitPercentage = purchasePrice > 0
+      ? (((salePrice - purchasePrice) / purchasePrice) * 100).toFixed(1)
+      : 0
+
+    // Calculate profit amount
+    const profit = salePrice - purchasePrice
+
+    return {
+      ...product,
+      exchangeRate: globalExchangeRate.value,
+      purchasePrice,
+      profitPercentage,
+      profit,
+      salePrice
+    }
   })
+})
+
+// Filtered and sorted products
+const filteredProducts = computed(() => {
+  let result = productsWithCalculations.value
+
+  // Apply search filter
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
+    result = result.filter(product => {
+      return (
+        product.name?.toLowerCase().includes(query) ||
+        product.sku?.toLowerCase().includes(query) ||
+        product.category?.toLowerCase().includes(query) ||
+        product.description?.toLowerCase().includes(query)
+      )
+    })
+  }
+
+  // Apply sorting
+  result = [...result].sort((a, b) => {
+    let aVal = a[sortColumn.value]
+    let bVal = b[sortColumn.value]
+
+    // Handle null/undefined values
+    if (aVal == null) aVal = ''
+    if (bVal == null) bVal = ''
+
+    // Convert to lowercase for string comparison
+    if (typeof aVal === 'string') aVal = aVal.toLowerCase()
+    if (typeof bVal === 'string') bVal = bVal.toLowerCase()
+
+    // Compare
+    if (aVal < bVal) return sortDirection.value === 'asc' ? -1 : 1
+    if (aVal > bVal) return sortDirection.value === 'asc' ? 1 : -1
+    return 0
+  })
+
+  return result
 })
 
 // Paginated products
@@ -96,6 +188,20 @@ const toggleActive = (product) => {
         />
       </div>
 
+      <!-- Exchange Rate Input (Admin Only) -->
+      <div v-if="isAdmin" class="flex items-center gap-2 flex-shrink-0">
+        <label class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap font-medium">T.C.:</label>
+        <input
+          v-model.number="globalExchangeRate"
+          @input="saveExchangeRate"
+          type="number"
+          step="0.001"
+          min="0"
+          placeholder="3.750"
+          class="w-24 px-2 py-2 rounded-lg border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm font-semibold text-blue-600 dark:text-blue-400"
+        />
+      </div>
+
       <!-- Page Size Selector -->
       <div class="flex items-center gap-2 flex-shrink-0">
         <label class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">Mostrar:</label>
@@ -113,31 +219,96 @@ const toggleActive = (product) => {
     </div>
 
     <!-- Table - Con scroll horizontal en móvil -->
-    <div class="relative overflow-x-auto shadow-sm rounded-xl border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600">
-      <table class="w-full text-sm text-left rtl:text-right text-slate-500 dark:text-slate-400 min-w-[800px]">
-        <thead class="text-xs text-slate-700 uppercase bg-slate-50 dark:bg-slate-700 dark:text-slate-400">
+    <div class="relative overflow-x-auto shadow-sm rounded-xl border-2 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600">
+      <table class="w-full text-sm text-left rtl:text-right text-slate-500 dark:text-slate-400 min-w-[800px] border-collapse">
+        <thead class="text-xs text-slate-700 uppercase bg-cyan-500 dark:bg-slate-700 text-white dark:text-slate-400">
           <tr>
-            <th scope="col" class="px-4 py-3">#</th>
-            <th scope="col" class="px-4 py-3">Img</th>
-            <th scope="col" class="px-4 py-3">Producto</th>
-            <th scope="col" class="px-4 py-3">Descripción</th>
-            <th scope="col" class="px-4 py-3">Categoría</th>
+            <th scope="col" class="px-4 py-3 border-r border-cyan-400 dark:border-slate-600">#</th>
+            <th scope="col" class="px-4 py-3 border-r border-cyan-400 dark:border-slate-600">Img</th>
+            <th scope="col" class="px-4 py-3 cursor-pointer hover:bg-cyan-600 dark:hover:bg-slate-600 transition-colors border-r border-cyan-400 dark:border-slate-600" @click="toggleSort('name')">
+              <div class="flex items-center justify-between">
+                <span>Producto</span>
+                <span class="ml-1">
+                  <svg v-if="sortColumn === 'name'" class="w-4 h-4 inline" fill="currentColor" viewBox="0 0 20 20">
+                    <path v-if="sortDirection === 'asc'" d="M5 10l5-5 5 5H5z"/>
+                    <path v-else d="M5 10l5 5 5-5H5z"/>
+                  </svg>
+                  <svg v-else class="w-4 h-4 inline opacity-30" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M5 8l5-5 5 5H5zM5 12l5 5 5-5H5z"/>
+                  </svg>
+                </span>
+              </div>
+            </th>
+            <th scope="col" class="px-4 py-3 border-r border-cyan-400 dark:border-slate-600">Descripción</th>
+            <th scope="col" class="px-4 py-3 cursor-pointer hover:bg-cyan-600 dark:hover:bg-slate-600 transition-colors border-r border-cyan-400 dark:border-slate-600" @click="toggleSort('category')">
+              <div class="flex items-center justify-between">
+                <span>Categoría</span>
+                <span class="ml-1">
+                  <svg v-if="sortColumn === 'category'" class="w-4 h-4 inline" fill="currentColor" viewBox="0 0 20 20">
+                    <path v-if="sortDirection === 'asc'" d="M5 10l5-5 5 5H5z"/>
+                    <path v-else d="M5 10l5 5 5-5H5z"/>
+                  </svg>
+                  <svg v-else class="w-4 h-4 inline opacity-30" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M5 8l5-5 5 5H5zM5 12l5 5 5-5H5z"/>
+                  </svg>
+                </span>
+              </div>
+            </th>
 
             <!-- Admin Columns -->
             <template v-if="isAdmin">
-              <th scope="col" class="px-4 py-3 text-right">USD</th>
-              <th scope="col" class="px-4 py-3 text-right">T.C.</th>
-              <th scope="col" class="px-4 py-3 text-right">Compra (S/)</th>
-              <th scope="col" class="px-4 py-3 text-right">% Gan.</th>
+              <th scope="col" class="px-4 py-3 text-right cursor-pointer hover:bg-cyan-600 dark:hover:bg-slate-600 transition-colors border-r border-cyan-400 dark:border-slate-600" @click="toggleSort('priceUsd')">
+                <div class="flex items-center justify-end">
+                  <span>USD</span>
+                  <span class="ml-1">
+                    <svg v-if="sortColumn === 'priceUsd'" class="w-4 h-4 inline" fill="currentColor" viewBox="0 0 20 20">
+                      <path v-if="sortDirection === 'asc'" d="M5 10l5-5 5 5H5z"/>
+                      <path v-else d="M5 10l5 5 5-5H5z"/>
+                    </svg>
+                    <svg v-else class="w-4 h-4 inline opacity-30" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M5 8l5-5 5 5H5zM5 12l5 5 5-5H5z"/>
+                    </svg>
+                  </span>
+                </div>
+              </th>
+              <th scope="col" class="px-4 py-3 text-right border-r border-cyan-400 dark:border-slate-600">T.C.</th>
+              <th scope="col" class="px-4 py-3 text-right border-r border-cyan-400 dark:border-slate-600">Compra (S/)</th>
+              <th scope="col" class="px-4 py-3 text-right border-r border-cyan-400 dark:border-slate-600">% Gan.</th>
             </template>
 
-            <th scope="col" class="px-4 py-3 text-right">Venta (S/)</th>
+            <th scope="col" class="px-4 py-3 text-right cursor-pointer hover:bg-cyan-600 dark:hover:bg-slate-600 transition-colors border-r border-cyan-400 dark:border-slate-600" @click="toggleSort('salePrice')">
+              <div class="flex items-center justify-end">
+                <span>Venta (S/)</span>
+                <span class="ml-1">
+                  <svg v-if="sortColumn === 'salePrice'" class="w-4 h-4 inline" fill="currentColor" viewBox="0 0 20 20">
+                    <path v-if="sortDirection === 'asc'" d="M5 10l5-5 5 5H5z"/>
+                    <path v-else d="M5 10l5 5 5-5H5z"/>
+                  </svg>
+                  <svg v-else class="w-4 h-4 inline opacity-30" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M5 8l5-5 5 5H5zM5 12l5 5 5-5H5z"/>
+                  </svg>
+                </span>
+              </div>
+            </th>
 
             <template v-if="isAdmin">
-              <th scope="col" class="px-4 py-3 text-right">Ganancia</th>
+              <th scope="col" class="px-4 py-3 text-right border-r border-cyan-400 dark:border-slate-600">Ganancia</th>
             </template>
 
-            <th scope="col" class="px-4 py-3 text-center">Stock</th>
+            <th scope="col" class="px-4 py-3 text-center cursor-pointer hover:bg-cyan-600 dark:hover:bg-slate-600 transition-colors border-r border-cyan-400 dark:border-slate-600" @click="toggleSort('qty')">
+              <div class="flex items-center justify-center">
+                <span>Stock</span>
+                <span class="ml-1">
+                  <svg v-if="sortColumn === 'qty'" class="w-4 h-4 inline" fill="currentColor" viewBox="0 0 20 20">
+                    <path v-if="sortDirection === 'asc'" d="M5 10l5-5 5 5H5z"/>
+                    <path v-else d="M5 10l5 5 5-5H5z"/>
+                  </svg>
+                  <svg v-else class="w-4 h-4 inline opacity-30" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M5 8l5-5 5 5H5zM5 12l5 5 5-5H5z"/>
+                  </svg>
+                </span>
+              </div>
+            </th>
             <th scope="col" class="px-4 py-3 text-center">Acciones</th>
           </tr>
         </thead>

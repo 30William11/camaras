@@ -6,8 +6,7 @@ import { useProductsStore } from '@/stores/products'
 import { useServicesStore } from '@/stores/services'
 import { useClientsStore } from '@/stores/clients'
 import { alertService } from '@/utils/alertService'
-import jsPDF from 'jspdf'
-import autoTable from 'jspdf-autotable'
+import { exportQuoteToPDF } from '@/utils/pdfExport'
 
 // Components
 // We will reuse ProductModal but purely for selection if possible,
@@ -157,163 +156,8 @@ const handleClientSelect = (e) => {
 }
 
 const exportPDF = () => {
-  try {
-    const doc = new jsPDF()
-
-    // Colors
-    const primaryColor = [41, 128, 185] // Blue
-    const grayColor = [100, 100, 100]
-    const yellowHighlight = [255, 255, 153] // Light yellow for highlighting
-
-    // Header
-    doc.setFontSize(22)
-    doc.setTextColor(...primaryColor)
-    doc.text('COTIZACIÓN', 105, 20, { align: 'center' })
-
-    // Company Info (Placeholder)
-    doc.setFontSize(10)
-    doc.setTextColor(0, 0, 0)
-    doc.text('Mi Empresa de Cámaras', 14, 30)
-    doc.text('RUC: 20123456789', 14, 35)
-    doc.text('Dirección: Av. Principal 123', 14, 40)
-
-    // Client Info Box
-    doc.setDrawColor(...grayColor)
-    doc.rect(120, 25, 80, 25)
-    doc.setFontSize(9)
-    doc.text(`Código: ${form.value.code}`, 125, 32)
-    doc.text(`Fecha: ${form.value.date}`, 125, 38)
-    doc.text(`Cliente: ${form.value.clientName}`, 125, 44)
-
-    // Table
-    const tableColumn = ["N°", "Producto", "Descripción", "Cant.", "Unidad", "Precio", "Subtotal"]
-    const tableRows = []
-
-    let rowIndex = 1
-
-    // Separate items by category
-    const materialesAdicionales = []
-    const otrosEquipos = []
-
-    equipos.value.forEach(item => {
-      // Check category from item first, then lookup in store
-      const category = item.category || (item.productId ? productsStore.list.find(p => p.id === item.productId)?.category : null)
-
-      // Case-insensitive comparison for "Materiales Adicionales"
-      const isMaterialesAdicionales = category?.toLowerCase().includes('materiales adicionales')
-
-      if (isMaterialesAdicionales) {
-        materialesAdicionales.push(item)
-      } else {
-        otrosEquipos.push(item)
-      }
-    })
-
-    // Equipos (excluding Materiales Adicionales)
-    if (otrosEquipos.length) {
-      tableRows.push([{ content: 'EQUIPOS', colSpan: 7, styles: { fillColor: [240, 240, 240], fontStyle: 'bold', textColor: [0,0,0] } }])
-      otrosEquipos.forEach(item => {
-        tableRows.push([
-          rowIndex++,
-          item.name,
-          item.description,
-          item.qty,
-          item.unit,
-          `S/. ${Number(item.price).toFixed(2)}`,
-          `S/. ${(item.qty * item.price).toFixed(2)}`
-        ])
-      })
-    }
-
-    // Servicios
-    if (servicios.value.length) {
-      tableRows.push([{ content: 'SERVICIOS', colSpan: 7, styles: { fillColor: [240, 240, 240], fontStyle: 'bold', textColor: [0,0,0] } }])
-      servicios.value.forEach(item => {
-        tableRows.push([
-          rowIndex++,
-          item.name,
-          item.description,
-          item.qty,
-          item.unit,
-          `S/. ${Number(item.price).toFixed(2)}`,
-          `S/. ${(item.qty * item.price).toFixed(2)}`
-        ])
-      })
-    }
-
-    // Materiales Adicionales - Separate section with highlighted quantities
-    if (materialesAdicionales.length) {
-      tableRows.push([{
-        content: 'MATERIALES ADICIONALES (Cantidades Aproximadas)',
-        colSpan: 7,
-        styles: {
-          fillColor: [255, 243, 205], // Light orange/yellow background
-          fontStyle: 'bold',
-          textColor: [0,0,0]
-        }
-      }])
-
-      materialesAdicionales.forEach(item => {
-        tableRows.push([
-          { content: rowIndex++, styles: {} },
-          { content: item.name, styles: {} },
-          { content: item.description, styles: {} },
-          { content: item.qty, styles: { fillColor: yellowHighlight, fontStyle: 'bold' } }, // Yellow highlight
-          { content: item.unit, styles: {} },
-          { content: `S/. ${Number(item.price).toFixed(2)}`, styles: {} },
-          { content: `S/. ${(item.qty * item.price).toFixed(2)}`, styles: {} }
-        ])
-      })
-    }
-
-    // Total
-    tableRows.push([
-      { content: 'TOTAL', colSpan: 6, styles: { halign: 'right', fontStyle: 'bold', fontSize: 12 } },
-      { content: `S/. ${total.value.toFixed(2)}`, styles: { fontStyle: 'bold', fontSize: 12, textColor: primaryColor } }
-    ])
-
-    autoTable(doc, {
-      head: [tableColumn],
-      body: tableRows,
-      startY: 60,
-      theme: 'grid',
-      styles: { fontSize: 9, cellPadding: 2 },
-      headStyles: { fillColor: primaryColor, textColor: [255, 255, 255], fontStyle: 'bold' },
-      columnStyles: {
-        0: { cellWidth: 10 }, // N°
-        3: { halign: 'center' }, // Cant
-        5: { halign: 'right' }, // Precio
-        6: { halign: 'right' } // Subtotal
-      }
-    })
-
-    // Add note about Materiales Adicionales
-    let finalY = doc.lastAutoTable.finalY + 10
-
-    if (materialesAdicionales.length > 0) {
-      doc.setFontSize(10)
-      doc.setTextColor(...primaryColor)
-      doc.text('Nota Importante:', 14, finalY)
-      doc.setTextColor(0, 0, 0)
-      doc.setFontSize(9)
-      const noteText = 'Los materiales adicionales resaltados tienen cantidades aproximadas. La cantidad final puede variar según las necesidades de la instalación.'
-      doc.text(noteText, 14, finalY + 5, { maxWidth: 180 })
-      finalY += 15
-    }
-
-    // Notes
-    if (form.value.notes) {
-      doc.setFontSize(10)
-      doc.setTextColor(...primaryColor)
-      doc.text('Notas:', 14, finalY)
-      doc.setTextColor(0, 0, 0)
-      doc.setFontSize(9)
-      doc.text(form.value.notes, 14, finalY + 5, { maxWidth: 180 })
-    }
-
-    doc.save(`cotizacion-${form.value.code}.pdf`)
-  } catch (e) {
-    console.error('Error generating PDF:', e)
+  const result = exportQuoteToPDF(form.value, productsStore.list)
+  if (!result.success) {
     alertService.showDanger('Hubo un error al generar el PDF. Por favor verifique los datos.')
   }
 }
@@ -376,8 +220,8 @@ const exportPDF = () => {
     </div>
 
     <!-- Items Table -->
-    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-      <table class="w-full text-sm text-left">
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-x-auto">
+      <table class="w-full text-sm text-left min-w-[800px]">
         <thead class="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 font-medium">
           <tr>
             <th class="px-4 py-3 w-10">#</th>
@@ -394,11 +238,32 @@ const exportPDF = () => {
 
           <!-- Section: Equipos -->
           <tr class="bg-slate-50 dark:bg-slate-700/50">
-            <td colspan="8" class="px-4 py-2 font-bold text-slate-700 dark:text-slate-300 flex justify-between items-center">
-              <span>EQUIPOS</span>
+            <td colspan="8" class="px-4 py-3 font-bold text-slate-700 dark:text-slate-300 flex justify-between items-center">
+              <span class="flex items-center gap-2">
+                <span class="text-lg">📦</span>
+                EQUIPOS
+              </span>
               <div class="flex gap-2">
-                <button @click="addItem('equipo')" class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200">+ Catálogo</button>
-                <button @click="addManualItem('equipo')" class="text-xs bg-slate-200 text-slate-700 px-2 py-1 rounded hover:bg-slate-300">+ Manual</button>
+                <button
+                  @click="addItem('equipo')"
+                  class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors shadow-sm"
+                  title="Seleccionar del catálogo"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                  Catálogo
+                </button>
+                <button
+                  @click="addManualItem('equipo')"
+                  class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors shadow-sm"
+                  title="Agregar manualmente"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Manual
+                </button>
               </div>
             </td>
           </tr>
@@ -429,11 +294,32 @@ const exportPDF = () => {
 
           <!-- Section: Servicios -->
           <tr class="bg-slate-50 dark:bg-slate-700/50">
-            <td colspan="8" class="px-4 py-2 font-bold text-slate-700 dark:text-slate-300 flex justify-between items-center">
-              <span>SERVICIOS</span>
+            <td colspan="8" class="px-4 py-3 font-bold text-slate-700 dark:text-slate-300 flex justify-between items-center">
+              <span class="flex items-center gap-2">
+                <span class="text-lg">🛠️</span>
+                SERVICIOS
+              </span>
               <div class="flex gap-2">
-                <button @click="addService" class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200">+ Catálogo</button>
-                <button @click="addManualItem('servicio')" class="text-xs bg-slate-200 text-slate-700 px-2 py-1 rounded hover:bg-slate-300">+ Manual</button>
+                <button
+                  @click="addService"
+                  class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors shadow-sm"
+                  title="Seleccionar del catálogo"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                  Catálogo
+                </button>
+                <button
+                  @click="addManualItem('servicio')"
+                  class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors shadow-sm"
+                  title="Agregar manualmente"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Manual
+                </button>
               </div>
             </td>
           </tr>

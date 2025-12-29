@@ -68,14 +68,14 @@ const handleSubmit = async () => {
       </button>
     </div>
 
-    <!-- Tabla -->
-    <div class="relative overflow-x-auto shadow-sm rounded-xl border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 max-w-2xl">
-      <table class="w-full text-sm text-left text-slate-500 dark:text-slate-400 min-w-[400px]">
-        <thead class="text-xs text-slate-700 uppercase bg-slate-50 dark:bg-slate-700 dark:text-slate-400">
+    <!-- Tabla de categorías -->
+    <div class="relative overflow-x-auto shadow-sm rounded-xl border-2 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700">
+      <table class="w-full text-sm text-left text-slate-500 dark:text-slate-400 min-w-[400px] border-collapse">
+        <thead class="text-xs text-slate-700 uppercase bg-cyan-500 dark:bg-slate-700 text-white dark:text-slate-400">
           <tr>
-            <th scope="col" class="px-4 py-3 w-16 text-center">N°</th>
-            <th scope="col" class="px-6 py-3">Nombre</th>
-            <th scope="col" class="px-6 py-3 text-center w-28">Acciones</th>
+            <th scope="col" class="px-4 py-3 border-r border-cyan-400 dark:border-slate-600">#</th>
+            <th scope="col" class="px-6 py-3 border-r border-cyan-400 dark:border-slate-600">Nombre</th>
+            <th scope="col" class="px-6 py-3 text-center">Acciones</th>
           </tr>
         </thead>
         <tbody>

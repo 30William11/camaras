@@ -24,11 +24,11 @@ provide('toggleMobileMenu', toggleMobileMenu)
     <!-- Contenido principal -->
     <div class="flex-1 flex flex-col min-w-0">
       <!-- Topbar - sticky en móvil -->
-      <header class="sticky top-0 z-30 h-14 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-3 sm:px-4 md:px-6 bg-white/95 dark:bg-slate-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 dark:supports-[backdrop-filter]:bg-slate-900/80">
+      <header class="sticky top-0 z-30 h-14 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-3 sm:px-4 md:px-6 bg-white dark:bg-slate-900 shadow-sm">
         <!-- Hamburger Menu (solo visible en móvil/tablet) -->
         <button
           @click="toggleMobileMenu"
-          class="lg:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          class="lg:hidden p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors text-blue-600 dark:text-slate-300"
           aria-label="Toggle menu"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -36,12 +36,12 @@ provide('toggleMobileMenu', toggleMobileMenu)
           </svg>
         </button>
 
-        <h1 class="text-sm sm:text-base md:text-lg font-semibold truncate">
+        <h1 class="text-sm sm:text-base md:text-lg font-semibold truncate text-slate-800 dark:text-white">
           Sistema de Cotizaciones CCTV
         </h1>
 
         <div class="flex items-center gap-2 sm:gap-4">
-          <span class="hidden sm:inline text-xs opacity-70">
+          <span class="hidden sm:inline text-xs text-slate-600 dark:text-slate-400">
             Panel de gestión
           </span>
           <ThemeToggle />

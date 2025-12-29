@@ -77,14 +77,15 @@ const handleDelete = async (client) => {
       </button>
     </div>
 
-    <div class="relative overflow-x-auto shadow-sm rounded-xl border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
-      <table class="w-full text-sm text-left text-slate-500 dark:text-slate-400 min-w-[700px]">
-        <thead class="text-sm text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-700 border-b border-slate-200 dark:border-slate-600">
+    <!-- Tabla de clientes -->
+    <div class="relative overflow-x-auto shadow-sm rounded-xl border-2 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700">
+      <table class="w-full text-sm text-left text-slate-500 dark:text-slate-400 min-w-[600px] border-collapse">
+        <thead class="text-sm bg-cyan-500 dark:bg-slate-700 text-white dark:text-slate-400 border-b-2 border-cyan-400 dark:border-slate-600">
           <tr>
-            <th scope="col" class="px-6 py-3 font-medium">Nombre / Razón Social</th>
-            <th scope="col" class="px-6 py-3 font-medium">Documento</th>
-            <th scope="col" class="px-6 py-3 font-medium">Contacto</th>
-            <th scope="col" class="px-6 py-3 font-medium">Dirección</th>
+            <th scope="col" class="px-6 py-3 font-medium border-r border-cyan-400 dark:border-slate-600">#</th>
+            <th scope="col" class="px-6 py-3 font-medium border-r border-cyan-400 dark:border-slate-600">Nombre</th>
+            <th scope="col" class="px-6 py-3 font-medium border-r border-cyan-400 dark:border-slate-600">RUC/DNI</th>
+            <th scope="col" class="px-6 py-3 font-medium border-r border-cyan-400 dark:border-slate-600">Email</th>
             <th scope="col" class="px-6 py-3 font-medium">Acciones</th>
           </tr>
         </thead>

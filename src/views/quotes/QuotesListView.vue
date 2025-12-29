@@ -2,19 +2,23 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuotesStore } from '@/stores/quotes'
+import { useProductsStore } from '@/stores/products'
 import { confirmService } from '@/utils/confirmService'
 import { alertService } from '@/utils/alertService'
+import { exportQuoteToPDF } from '@/utils/pdfExport'
 
 const router = useRouter()
 const quotesStore = useQuotesStore()
+const productsStore = useProductsStore()
 
 // Pagination and filtering state
 const searchQuery = ref('')
 const currentPage = ref(1)
-const pageSize = ref(25) // Changed default to 25 like ProductsTable
+const pageSize = ref(10) // Default page size
 
 onMounted(() => {
   quotesStore.fetchQuotes()
+  productsStore.fetchProducts()
 })
 
 const createQuote = () => {
@@ -135,6 +139,15 @@ const changeQuoteStatus = async (newStatus) => {
   }
 }
 
+const exportQuote = async (quote) => {
+  const result = exportQuoteToPDF(quote, productsStore.list)
+  if (result.success) {
+    alertService.showSuccess('PDF exportado correctamente')
+  } else {
+    alertService.showDanger('Error al exportar PDF: ' + result.error)
+  }
+}
+
 // Get row number accounting for pagination
 const getRowNumber = (index) => {
   return startIndex.value + index
@@ -186,16 +199,16 @@ const getRowNumber = (index) => {
     </div>
 
     <!-- Table -->
-    <div class="relative overflow-x-auto shadow-sm rounded-xl border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
-      <table class="w-full text-sm text-left text-slate-500 dark:text-slate-400 min-w-[900px]">
-        <thead class="text-xs text-slate-700 uppercase bg-slate-50 dark:bg-slate-700 dark:text-slate-400">
+    <div class="relative overflow-x-auto shadow-sm rounded-xl border-2 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700">
+      <table class="w-full text-sm text-left text-slate-500 dark:text-slate-400 min-w-[900px] border-collapse">
+        <thead class="text-xs text-slate-700 uppercase bg-cyan-500 dark:bg-slate-700 text-white dark:text-slate-400">
           <tr>
-            <th scope="col" class="px-4 py-3">#</th>
-            <th scope="col" class="px-6 py-3">Código</th>
-            <th scope="col" class="px-6 py-3">Cliente</th>
-            <th scope="col" class="px-6 py-3">Fecha</th>
-            <th scope="col" class="px-6 py-3">Total</th>
-            <th scope="col" class="px-6 py-3">Estado</th>
+            <th scope="col" class="px-4 py-3 border-r border-cyan-400 dark:border-slate-600">#</th>
+            <th scope="col" class="px-6 py-3 border-r border-cyan-400 dark:border-slate-600">Código</th>
+            <th scope="col" class="px-6 py-3 border-r border-cyan-400 dark:border-slate-600">Cliente</th>
+            <th scope="col" class="px-6 py-3 border-r border-cyan-400 dark:border-slate-600">Fecha</th>
+            <th scope="col" class="px-6 py-3 border-r border-cyan-400 dark:border-slate-600">Total</th>
+            <th scope="col" class="px-6 py-3 border-r border-cyan-400 dark:border-slate-600">Estado</th>
             <th scope="col" class="px-6 py-3 text-center">Acciones</th>
           </tr>
         </thead>
@@ -247,6 +260,15 @@ const getRowNumber = (index) => {
               </td>
               <td class="px-6 py-4">
                 <div class="flex items-center justify-center gap-3">
+                  <button
+                    @click="exportQuote(quote)"
+                    class="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 transition-colors"
+                    title="Exportar PDF"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </button>
                   <button
                     @click="editQuote(quote.id)"
                     class="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"

@@ -90,13 +90,13 @@ const deleteUnit = async (id) => {
     </div>
 
     <!-- Tabla de unidades -->
-    <div class="relative overflow-x-auto shadow-sm rounded-xl border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 max-w-2xl">
-      <table class="w-full text-sm text-left text-slate-500 dark:text-slate-400 min-w-[400px]">
-        <thead class="text-sm text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-700 border-b border-slate-200 dark:border-slate-600">
+    <div class="relative overflow-x-auto shadow-sm rounded-xl border-2 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700">
+      <table class="w-full text-sm text-left text-slate-500 dark:text-slate-400 min-w-[400px] border-collapse">
+        <thead class="text-sm text-slate-900 dark:text-white bg-cyan-500 dark:bg-slate-700 text-white dark:text-slate-400 border-b-2 border-cyan-400 dark:border-slate-600">
           <tr>
-            <th scope="col" class="px-6 py-3 font-medium">#</th>
-            <th scope="col" class="px-6 py-3 font-medium">Nombre</th>
-            <th scope="col" class="px-6 py-3 font-medium">Abreviación</th>
+            <th scope="col" class="px-6 py-3 font-medium border-r border-cyan-400 dark:border-slate-600">#</th>
+            <th scope="col" class="px-6 py-3 font-medium border-r border-cyan-400 dark:border-slate-600">Nombre</th>
+            <th scope="col" class="px-6 py-3 font-medium border-r border-cyan-400 dark:border-slate-600">Abreviación</th>
             <th scope="col" class="px-6 py-3 font-medium">Acciones</th>
           </tr>
         </thead>

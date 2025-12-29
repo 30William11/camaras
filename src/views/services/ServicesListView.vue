@@ -19,13 +19,16 @@ onMounted(() => {
 
 const openModal = (service = null) => {
   if (service) {
-    editingService.value = service
+    console.log('📝 Opening edit modal for service:', service)
+    editingService.value = { ...service } // Create a copy to avoid reference issues
     form.value = {
-      name: service.name,
-      description: service.description,
-      price: service.price
+      name: service.name || '',
+      description: service.description || '',
+      price: Number(service.price) || 0
     }
+    console.log('📋 Form populated with:', form.value)
   } else {
+    console.log('➕ Opening create modal')
     editingService.value = null
     form.value = {
       name: '',
@@ -48,14 +51,24 @@ const closeModal = () => {
 
 const saveService = async () => {
   try {
+    console.log('💾 Saving service...', {
+      isEdit: !!editingService.value,
+      serviceId: editingService.value?.id,
+      formData: form.value
+    })
+
     if (editingService.value) {
+      console.log('🔄 Updating service:', editingService.value.id)
       await servicesStore.updateService(editingService.value.id, form.value)
+      console.log('✅ Service updated successfully')
     } else {
+      console.log('➕ Creating new service')
       await servicesStore.addService(form.value)
+      console.log('✅ Service created successfully')
     }
     closeModal()
   } catch (error) {
-    console.error('Error saving service:', error)
+    console.error('❌ Error saving service:', error)
   }
 }
 
@@ -94,14 +107,14 @@ const deleteService = async (id) => {
     </div>
 
     <!-- Tabla de servicios -->
-    <div class="relative overflow-x-auto shadow-sm rounded-xl border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
-      <table class="w-full text-sm text-left text-slate-500 dark:text-slate-400 min-w-[600px]">
-        <thead class="text-sm text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-700 border-b border-slate-200 dark:border-slate-600">
+    <div class="relative overflow-x-auto shadow-sm rounded-xl border-2 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700">
+      <table class="w-full text-sm text-left text-slate-500 dark:text-slate-400 min-w-[600px] border-collapse">
+        <thead class="text-sm text-slate-900 dark:text-white bg-cyan-500 dark:bg-slate-700 text-white dark:text-slate-400 border-b-2 border-cyan-400 dark:border-slate-600">
           <tr>
-            <th scope="col" class="px-6 py-3 font-medium">#</th>
-            <th scope="col" class="px-6 py-3 font-medium">Nombre</th>
-            <th scope="col" class="px-6 py-3 font-medium">Descripción</th>
-            <th scope="col" class="px-6 py-3 font-medium">Precio</th>
+            <th scope="col" class="px-6 py-3 font-medium border-r border-cyan-400 dark:border-slate-600">#</th>
+            <th scope="col" class="px-6 py-3 font-medium border-r border-cyan-400 dark:border-slate-600">Nombre</th>
+            <th scope="col" class="px-6 py-3 font-medium border-r border-cyan-400 dark:border-slate-600">Descripción</th>
+            <th scope="col" class="px-6 py-3 font-medium border-r border-cyan-400 dark:border-slate-600">Precio</th>
             <th scope="col" class="px-6 py-3 font-medium">Acciones</th>
           </tr>
         </thead>
