@@ -111,7 +111,7 @@ watch(
     <!-- Header -->
     <div class="h-14 flex items-center justify-between px-4 border-b border-blue-500 dark:border-slate-800 bg-blue-700 dark:bg-slate-900">
       <div class="flex items-center gap-2">
-        <span class="text-2xl">🎥</span>
+        <img src="/logo.png" alt="Logo" class="h-8 w-8 object-contain" />
         <span v-if="!collapsed" class="font-bold text-sm leading-tight text-white">
           CCTV Cotizador
         </span>

@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useThemeStore } from '@/stores/theme'
 import { logDebug, logInfo, logError } from '@/utils/logger'
+import ThemeToggle from '@/components/ThemeToggle.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -43,17 +44,108 @@ const onLogin = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex">
+  <div class="min-h-screen flex relative">
+    <!-- Theme Toggle - Top Right Corner -->
+    <div class="absolute top-4 right-4 z-50">
+      <ThemeToggle />
+    </div>
+
     <!-- Left Panel - Login Form -->
-    <div class="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white dark:bg-slate-900">
-      <div class="w-full max-w-md">
-        <!-- Logo y Branding -->
-        <div class="mb-8 text-center lg:text-left">
-          <div class="inline-flex items-center justify-center w-16 h-16 mb-4 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl shadow-lg">
-            <svg class="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white dark:bg-slate-900 relative">
+      <!-- 3D Security Camera 1 - Top Right Corner -->
+      <div class="absolute top-0 right-0 z-30 camera-container camera-right">
+        <!-- Camera Mount/Bracket -->
+        <div class="camera-mount">
+          <!-- Camera Body -->
+          <div class="camera-body group">
+            <!-- Camera Image with Effects -->
+            <div class="relative">
+              <img
+                src="/camara1.png"
+                alt="Security Camera"
+                class="camera-image"
+              />
+
+              <!-- Light Effects (visible only in dark mode) -->
+              <div class="light-effects dark:opacity-100 opacity-0">
+                <!-- White Light Rays (More rays for better illumination) -->
+                <div class="white-ray white-ray-1"></div>
+                <div class="white-ray white-ray-2"></div>
+                <div class="white-ray white-ray-3"></div>
+                <div class="white-ray white-ray-4"></div>
+                <div class="white-ray white-ray-5"></div>
+
+                <!-- Infrared Rays -->
+                <div class="ir-ray ir-ray-1"></div>
+                <div class="ir-ray ir-ray-2"></div>
+              </div>
+
+              <!-- Status LED Indicator -->
+              <div class="status-led"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3D Security Camera 2 - Top Left Corner -->
+      <div class="absolute top-0 left-0 z-30 camera-container camera-left">
+        <!-- Camera Mount/Bracket -->
+        <div class="camera-mount-left">
+          <!-- Camera Body -->
+          <div class="camera-body group">
+            <!-- Camera Image with Effects -->
+            <div class="relative">
+              <img
+                src="/camara2.png"
+                alt="Security Camera 2"
+                class="camera-image"
+              />
+
+              <!-- Light Effects (visible only in dark mode) -->
+              <div class="light-effects-left dark:opacity-100 opacity-0">
+                <!-- White Light Rays -->
+                <div class="white-ray-left white-ray-left-1"></div>
+                <div class="white-ray-left white-ray-left-2"></div>
+                <div class="white-ray-left white-ray-left-3"></div>
+                <div class="white-ray-left white-ray-left-4"></div>
+                <div class="white-ray-left white-ray-left-5"></div>
+
+                <!-- Infrared Rays -->
+                <div class="ir-ray-left ir-ray-left-1"></div>
+                <div class="ir-ray-left ir-ray-left-2"></div>
+              </div>
+
+              <!-- Status LED Indicator -->
+              <div class="status-led"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="w-full max-w-md relative">
+        <!-- Mobile Camera - Above Logo (visible only on mobile) -->
+        <div class="lg:hidden absolute -top-24 left-1/2 transform -translate-x-1/2 z-30">
+          <div class="camera-body-mobile">
+            <img
+              src="/camara3.png"
+              alt="Security Camera Mobile"
+              class="w-20 h-20 object-contain"
+            />
+
+            <!-- Mobile Light Effects (visible only in dark mode) -->
+            <div class="light-effects-mobile dark:opacity-100 opacity-0">
+              <!-- Mobile Flashlight Cone -->
+            </div>
+
+            <!-- Status LED -->
+            <div class="status-led-mobile"></div>
+          </div>
+        </div>
+
+        <!-- Logo y Branding - Centered -->
+        <div class="mb-8 text-center">
+          <div class="inline-flex items-center justify-center w-16 h-16 mb-4 bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-2">
+            <img src="/logo.png" alt="Logo" class="w-full h-full object-contain" />
           </div>
           <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">
             Bienvenido
@@ -195,47 +287,33 @@ const onLogin = async () => {
           </p>
         </div>
 
-        <!-- Features -->
-        <div class="space-y-4 max-w-md">
-          <div class="flex items-start gap-3 bg-white/10 backdrop-blur-sm rounded-xl p-4 hover:bg-white/15 transition-colors">
-            <div class="w-10 h-10 bg-blue-500/30 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div>
-              <h4 class="font-semibold mb-1">Control Total</h4>
-              <p class="text-sm text-blue-100">Administra productos, servicios y cotizaciones desde un solo lugar</p>
-            </div>
-          </div>
+        <!-- Featured Image Card with instalador.png -->
+        <div class="mb-8 group">
+          <div class="relative rounded-2xl p-6 transition-all duration-300">
+            <!-- Image Container -->
+            <div class="relative overflow-hidden rounded-xl mb-4">
+              <img
+                src="/instalador.png"
+                alt="Instalador Profesional"
+                class="w-full h-64 object-contain transform group-hover:scale-105 transition-transform duration-500"
+              />
 
-          <div class="flex items-start gap-3 bg-white/10 backdrop-blur-sm rounded-xl p-4 hover:bg-white/15 transition-colors">
-            <div class="w-10 h-10 bg-blue-500/30 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
+              <!-- Badge -->
+              <div class="absolute top-4 right-4 bg-green-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                Profesional
+              </div>
             </div>
-            <div>
-              <h4 class="font-semibold mb-1">Gestión de Clientes</h4>
-              <p class="text-sm text-blue-100">Base de datos centralizada con historial completo</p>
-            </div>
-          </div>
 
-          <div class="flex items-start gap-3 bg-white/10 backdrop-blur-sm rounded-xl p-4 hover:bg-white/15 transition-colors">
-            <div class="w-10 h-10 bg-blue-500/30 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-            </div>
-            <div>
-              <h4 class="font-semibold mb-1">Seguridad Garantizada</h4>
-              <p class="text-sm text-blue-100">Autenticación robusta y control de accesos por roles</p>
-            </div>
+            <!-- Card Content -->
+
           </div>
         </div>
 
         <!-- Version Info -->
-        <div class="mt-12 text-sm text-blue-200/60">
+        <div class="mt-4 text-sm text-blue-200/60">
           © 2024 Sistema de Gestión de Seguridad
         </div>
       </div>
@@ -244,7 +322,268 @@ const onLogin = async () => {
 </template>
 
 <style scoped>
-/* Animaciones suaves para inputs */
+/* ===== 3D Security Camera Styles ===== */
+
+/* Camera Container - 3D Positioning */
+.camera-container {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+/* Camera Mount */
+.camera-mount {
+  position: relative;
+  padding: 0; /* No padding to stick to corner */
+  margin: 0;
+  transform: rotateX(-15deg) rotateY(-15deg); /* Negative Y for right side */
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease;
+}
+
+.camera-mount:hover {
+  transform: rotateX(-10deg) rotateY(-20deg) scale(1.05);
+}
+
+/* Camera Body */
+.camera-body {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  transform-style: preserve-3d;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3))
+          drop-shadow(0 6px 6px rgba(0, 0, 0, 0.2));
+}
+
+/* Camera Image */
+.camera-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform: translateZ(20px);
+  transition: all 0.3s ease;
+}
+
+/* ===== Infrared Effects (Dark Mode) ===== */
+
+/* Infrared LEDs Ring */
+.infrared-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 80px;
+  height: 80px;
+  transform: translate(-50%, -50%) translateZ(25px);
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+/* Individual IR LED */
+.ir-led {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, #ff0040 0%, #cc0033 50%, transparent 70%);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform:
+    translate(-50%, -50%)
+    rotate(var(--angle))
+    translateY(-40px);
+  box-shadow:
+    0 0 4px #ff0040,
+    0 0 8px #ff0040,
+    0 0 12px #cc0033;
+  animation: ir-pulse 2s ease-in-out infinite;
+  animation-delay: calc(var(--angle) / 360deg * 2s);
+}
+
+@keyframes ir-pulse {
+  0%, 100% {
+    opacity: 0.6;
+    box-shadow:
+      0 0 4px #ff0040,
+      0 0 8px #ff0040,
+      0 0 12px #cc0033;
+  }
+  50% {
+    opacity: 1;
+    box-shadow:
+      0 0 6px #ff0040,
+      0 0 12px #ff0040,
+      0 0 18px #cc0033,
+      0 0 24px #cc0033;
+  }
+}
+
+/* ===== Light Effects (Dark Mode Only) ===== */
+
+.light-effects {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+  transform: translateZ(10px);
+  overflow: visible;
+}
+
+/* Triangular Lamp Cone Effect - Aligned with Camera */
+.light-effects::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-left: 300px solid transparent;
+  border-right: 300px solid transparent;
+  border-top: 700px solid rgba(255, 255, 255, 0.35);
+  transform: translate(250px, 95px) rotate(25deg);
+  transform-origin: top center;
+  filter: blur(30px);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  animation: lamp-glow 4s ease-in-out infinite;
+  z-index: 1; /* Behind the rays */
+}
+
+@keyframes lamp-glow {
+  0%, 100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* White Light Rays - Diagonal Down-Right */
+
+
+.white-ray-1 {
+  transform: rotate(25deg); /* Far left */
+  animation-delay: 0s;
+  width: 2px;
+  opacity: 0.75;
+}
+
+.white-ray-2 {
+  transform: rotate(30deg); /* Left */
+  width: 3px;
+  animation-delay: 0.2s;
+  opacity: 0.85;
+}
+
+.white-ray-3 {
+  transform: rotate(35deg); /* Center */
+  width: 4px;
+  animation-delay: 0.4s;
+  opacity: 1;
+}
+
+.white-ray-4 {
+  transform: rotate(40deg); /* Right */
+  width: 3px;
+  animation-delay: 0.6s;
+  opacity: 0.85;
+}
+
+.white-ray-5 {
+  transform: rotate(45deg); /* Far right */
+  width: 2px;
+  animation-delay: 0.8s;
+  opacity: 0.75;
+}
+
+/* Infrared Rays - Diagonal Down-Right (Orange/Red) */
+.ir-ray {
+  position: absolute;
+  top: 95px; /* Bottom of camera - IR LED area */
+  right: 50px; /* Center-bottom of camera */
+  width: 2px;
+  height: 700px;
+  transform-origin: top center;
+  filter: blur(3px);
+  animation: ir-ray-pulse 3s ease-in-out infinite;
+}
+
+.ir-ray-1 {
+  background: linear-gradient(
+    to bottom,
+
+    rgba(255, 0, 0, 0.932) 0%,
+    transparent 90%
+  );
+  transform: rotate(30deg); /* Orange ray - between white rays */
+  animation-delay: 0.3s;
+  width: 5px;
+}
+
+.ir-ray-2 {
+  background: linear-gradient(
+    to bottom,
+
+    rgba(255, 0, 0, 0.932) 0%,
+    transparent 90%
+  );
+  transform: rotate(25deg); /* Red ray - between white rays */
+  width: 5px;
+  animation-delay: 0.7s;
+}
+
+@keyframes ray-pulse {
+  0%, 100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes ir-ray-pulse {
+  0%, 100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Status LED Indicator */
+.status-led {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 8px;
+  height: 8px;
+  background: #00ff00;
+  border-radius: 50%;
+  box-shadow:
+    0 0 4px #00ff00,
+    0 0 8px #00ff00,
+    0 0 12px #00ff00;
+  animation: status-blink 2s ease-in-out infinite;
+  transform: translateZ(30px);
+}
+
+@keyframes status-blink {
+  0%, 100% {
+    opacity: 1;
+    box-shadow:
+      0 0 4px #00ff00,
+      0 0 8px #00ff00,
+      0 0 12px #00ff00;
+  }
+  50% {
+    opacity: 0.3;
+    box-shadow:
+      0 0 2px #00ff00,
+      0 0 4px #00ff00;
+  }
+}
+
+/* ===== Input Animations ===== */
 input:focus {
   animation: pulse-ring 1.5s ease-in-out;
 }
@@ -258,6 +597,163 @@ input:focus {
   }
   100% {
     box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+/* ===== LEFT CAMERA STYLES (Camera 2) ===== */
+
+/* Camera Mount Left - Mirrored */
+.camera-mount-left {
+  position: relative;
+  padding: 0;
+  margin: 0;
+  transform: rotateX(-15deg) rotateY(15deg); /* Positive Y for left side */
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease;
+}
+
+.camera-mount-left:hover {
+  transform: rotateX(-10deg) rotateY(20deg) scale(1.05);
+}
+
+/* Light Effects Left Container */
+.light-effects-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+  transform: translateZ(10px);
+  overflow: visible;
+}
+
+/* Triangular Lamp Cone Effect - Left Camera (Mirrored) */
+.light-effects-left::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-left: 300px solid transparent;
+  border-right: 300px solid transparent;
+  border-top: 700px solid rgba(255, 255, 255, 0.35);
+  transform: translate(-250px, 95px) rotate(-25deg); /* Negative rotation for left diagonal */
+  transform-origin: top center;
+  filter: blur(30px);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  animation: lamp-glow 4s ease-in-out infinite;
+  z-index: 1;
+}
+
+
+
+
+
+
+/* Infrared Rays Left - Diagonal Down-Left */
+.ir-ray-left {
+  position: absolute;
+  top: 95px;
+  left: 50px;
+  width: 5px;
+  height: 700px;
+  transform-origin: top center;
+  filter: blur(3px);
+  animation: ir-ray-pulse 3s ease-in-out infinite;
+}
+
+.ir-ray-left-1 {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 0, 0, 0.932) 0%,
+
+    transparent 90%
+  );
+  transform: rotate(-30deg);
+  animation-delay: 0.3s;
+  width: 6px;
+}
+
+.ir-ray-left-2 {
+  background: linear-gradient(
+    to bottom,
+   rgba(255, 0, 0, 0.932) 0%,
+    transparent 90%
+  );
+  transform: rotate(-25deg);
+  width: 5px;
+  animation-delay: 0.7s;
+}
+
+/* ===== MOBILE CAMERA STYLES (Camera 3) ===== */
+
+.camera-body-mobile {
+  position: relative;
+  display: inline-block;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+}
+
+/* Mobile Light Effects Container */
+.light-effects-mobile {
+  position: absolute;
+  top: 80px; /* Below the camera */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+  overflow: visible;
+}
+
+/* Mobile Flashlight Cone - Pointing Down */
+.light-effects-mobile::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-left: 200px solid transparent;
+  border-right: 200px solid transparent;
+  border-top: 500px solid rgba(255, 255, 255, 0.35);
+  transform: translateX(-50%);
+  transform-origin: top center;
+  filter: blur(30px);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  animation: lamp-glow 4s ease-in-out infinite;
+}
+
+/* Mobile Status LED */
+.status-led-mobile {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 6px;
+  height: 6px;
+  background: #00ff00;
+  border-radius: 50%;
+  box-shadow:
+    0 0 4px #00ff00,
+    0 0 8px #00ff00;
+  animation: status-blink 2s ease-in-out infinite;
+}
+
+/* ===== Responsive Adjustments ===== */
+@media (max-width: 1024px) {
+  /* Hide desktop cameras on mobile */
+  .camera-container {
+    display: none;
+  }
+}
+
+@media (min-width: 1025px) {
+  /* Hide mobile camera on desktop */
+  .camera-body-mobile {
+    display: none !important;
   }
 }
 </style>

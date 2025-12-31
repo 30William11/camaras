@@ -35,7 +35,10 @@ const toggleMobileMenu = () => {
       <div class="h-full flex flex-col">
         <!-- Logo/Header -->
         <div class="h-14 flex items-center justify-between px-4 border-b border-slate-700">
-          <h2 class="text-lg font-bold text-white">Panel Admin</h2>
+          <div class="flex items-center gap-2">
+            <img src="/logo.png" alt="Logo" class="h-8 w-8 object-contain" />
+            <h2 class="text-lg font-bold text-white">Panel Admin</h2>
+          </div>
           <button
             @click="toggleMobileMenu"
             class="lg:hidden p-2 rounded-lg hover:bg-slate-700 text-white"

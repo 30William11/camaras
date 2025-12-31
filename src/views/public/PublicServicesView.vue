@@ -10,16 +10,79 @@ onMounted(() => {
   servicesStore.loadServices()
 })
 
+// Servicios profesionales predefinidos
+const predefinedServices = [
+  {
+    id: 'service-1',
+    name: 'Instalación de Cámaras de Videovigilancia',
+    description: 'Instalación profesional de sistemas CCTV con cámaras de alta resolución, configuración de DVR/NVR y acceso remoto desde cualquier dispositivo.',
+    category: 'Instalación',
+    icon: 'camera',
+    active: true,
+    order: 1
+  },
+  {
+    id: 'service-2',
+    name: 'Mantenimiento Preventivo de Sistemas de CCTV',
+    description: 'Servicio de mantenimiento programado para garantizar el óptimo funcionamiento de tus cámaras, limpieza de lentes, verificación de conexiones y actualización de firmware.',
+    category: 'Mantenimiento',
+    icon: 'tools',
+    active: true,
+    order: 2
+  },
+  {
+    id: 'service-3',
+    name: 'Mantenimiento Correctivo de Sistemas de CCTV',
+    description: 'Reparación y solución de problemas en sistemas de videovigilancia, diagnóstico técnico, reemplazo de componentes y restauración del servicio.',
+    category: 'Mantenimiento',
+    icon: 'wrench',
+    active: true,
+    order: 3
+  },
+  {
+    id: 'service-4',
+    name: 'Cableado Estructurado para Hogares y Entidades',
+    description: 'Diseño e instalación de redes de cableado estructurado categoría 6/6A, certificación de enlaces, organización de gabinetes y documentación completa.',
+    category: 'Redes',
+    icon: 'network',
+    active: true,
+    order: 4
+  },
+  {
+    id: 'service-5',
+    name: 'Instalación de Equipos de Red',
+    description: 'Configuración e instalación de switches, routers, access points, gabinetes de red y sistemas de gestión centralizada para redes empresariales.',
+    category: 'Redes',
+    icon: 'server',
+    active: true,
+    order: 5
+  },
+  {
+    id: 'service-6',
+    name: 'Instalación de Alarmas y Sensores',
+    description: 'Sistemas de alarma con sensores de movimiento, contactos magnéticos, detectores de humo, sirenas y notificaciones en tiempo real a tu smartphone.',
+    category: 'Seguridad',
+    icon: 'alarm',
+    active: true,
+    order: 6
+  }
+]
+
+// Combinar servicios predefinidos con los de la base de datos
+const allServices = computed(() => {
+  return [...predefinedServices, ...servicesStore.activeServices]
+})
+
 const categories = computed(() => {
-  const cats = new Set(servicesStore.activeServices.map(s => s.category).filter(Boolean))
+  const cats = new Set(allServices.value.map(s => s.category).filter(Boolean))
   return ['all', ...Array.from(cats)]
 })
 
 const filteredServices = computed(() => {
   if (selectedCategory.value === 'all') {
-    return servicesStore.activeServices
+    return allServices.value
   }
-  return servicesStore.activeServices.filter(s => s.category === selectedCategory.value)
+  return allServices.value.filter(s => s.category === selectedCategory.value)
 })
 </script>
 
