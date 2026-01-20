@@ -59,6 +59,8 @@ export const useProductsStore = defineStore('products', {
             description: data.description || '', // New field
             type: data.type || '',
             unit: data.unit || '',
+            brand: data.brand || '', // Brand field for catalog
+            pdfUrl: data.pdfUrl || null, // PDF for technical specs
           }
         })
 
@@ -88,11 +90,33 @@ export const useProductsStore = defineStore('products', {
       }
     },
 
+    async uploadPdfIfNeeded(file) {
+      if (!file) return null
+      try {
+        const ext = file.name.split('.').pop()
+        const fileName = `products/pdfs/${Date.now()}-${Math.random()
+          .toString(36)
+          .slice(2)}.${ext}`
+        const ref = storageRef(storage, fileName)
+        await uploadBytes(ref, file)
+        const url = await getDownloadURL(ref)
+        return url
+      } catch (e) {
+        logError('[products] Error subiendo PDF', e)
+        throw e
+      }
+    },
+
     async createProduct(data) {
       try {
         let imageUrl = data.imageUrl || null
         if (data.imageFile) {
           imageUrl = await this.uploadImageIfNeeded(data.imageFile)
+        }
+
+        let pdfUrl = data.pdfUrl || null
+        if (data.pdfFile) {
+          pdfUrl = await this.uploadPdfIfNeeded(data.pdfFile)
         }
 
         const payload = {
@@ -115,6 +139,8 @@ export const useProductsStore = defineStore('products', {
           description: data.description || '',
           type: data.type || 'equipo',
           unit: data.unit || 'unidad',
+          brand: data.brand || '',
+          pdfUrl,
           createdAt: serverTimestamp(),
         }
 
@@ -148,6 +174,14 @@ export const useProductsStore = defineStore('products', {
           imageUrl = null
         }
 
+        let pdfUrl = current.pdfUrl || null
+
+        if (data.pdfFile) {
+          pdfUrl = await this.uploadPdfIfNeeded(data.pdfFile)
+        } else if (data.removePdf) {
+          pdfUrl = null
+        }
+
         const payload = {
           name: data.name ?? current.name,
           sku: data.sku ?? current.sku,
@@ -170,6 +204,8 @@ export const useProductsStore = defineStore('products', {
           description: data.description ?? current.description,
           type: data.type ?? current.type,
           unit: data.unit ?? current.unit,
+          brand: data.brand ?? current.brand,
+          pdfUrl,
           updatedAt: serverTimestamp(),
         }
 
@@ -253,6 +289,49 @@ export const useProductsStore = defineStore('products', {
         logInfo('[products] Estado cambiado', id, current.active)
       } catch (e) {
         logError('[products] Error al cambiar estado producto', e)
+      }
+    },
+
+    async fetchActiveProducts() {
+      this.loading = true
+      logInfo('[products] fetchActiveProducts() INICIO')
+
+      try {
+        const colRef = collection(db, 'products')
+        const snap = await getDocs(colRef)
+
+        this.list = snap.docs
+          .map((d) => {
+            const data = d.data()
+            return {
+              id: d.id,
+              name: data.name || 'Sin nombre',
+              sku: data.sku || '',
+              price: data.salePrice ?? data.basePrice ?? data.price ?? 0,
+              priceUsd: data.priceUsd ?? 0,
+              exchangeRate: data.exchangeRate ?? 0,
+              purchasePrice: data.purchasePrice ?? 0,
+              profitPercentage: data.profitPercentage ?? 0,
+              profit: data.profit ?? 0,
+              salePrice: data.salePrice ?? data.basePrice ?? data.price ?? 0,
+              qty: data.qty ?? 0,
+              imageUrl: data.imageUrl || null,
+              active: data.active ?? true,
+              category: data.category || '',
+              description: data.description || '',
+              type: data.type || '',
+              unit: data.unit || '',
+              brand: data.brand || '',
+              pdfUrl: data.pdfUrl || null,
+            }
+          })
+          .filter((p) => p.active) // Only active products
+
+        logInfo('[products] Active products loaded:', this.list.length)
+      } catch (e) {
+        logError('[products] ERROR en fetchActiveProducts:', e)
+      } finally {
+        this.loading = false
       }
     },
 

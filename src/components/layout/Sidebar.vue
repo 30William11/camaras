@@ -11,6 +11,7 @@ const authStore = useAuthStore()
 
 const collapsed = ref(false)
 const productsExpanded = ref(false)
+const websiteExpanded = ref(false)
 
 // Inject mobile menu state from AppLayout
 const mobileMenuOpen = inject('mobileMenuOpen', ref(false))
@@ -48,6 +49,20 @@ const menuItems = computed(() => {
   if (role === 'admin' || role === 'superadmin') {
     items.push({ name: 'Servicios', icon: '🛠️', to: { name: 'app.services.index' } })
     logDebug('Sidebar: añadido item Servicios')
+  }
+
+  // Gestión Web: admin y superadmin (con submenú)
+  if (role === 'admin' || role === 'superadmin') {
+    items.push({
+      name: 'Gestión Web',
+      icon: '🌐',
+      submenu: [
+        { name: 'Productos', to: { name: 'app.website.products' } },
+        { name: 'Configuración', to: { name: 'app.website.config' } },
+        { name: 'Contenido Web', to: { name: 'app.website.content' } }
+      ]
+    })
+    logDebug('Sidebar: añadido item Gestión Web con submenú')
   }
 
   // Usuarios: solo superadmin
@@ -147,7 +162,7 @@ watch(
           <!-- Botón principal -->
           <button
             class="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-sm transition hover:bg-blue-700 dark:hover:bg-slate-800 text-blue-50 dark:text-slate-300"
-            @click="productsExpanded = !productsExpanded"
+            @click="item.name === 'Productos' ? productsExpanded = !productsExpanded : websiteExpanded = !websiteExpanded"
           >
             <div class="flex items-center gap-2">
               <span class="text-lg">{{ item.icon }}</span>
@@ -156,7 +171,7 @@ watch(
             <svg
               v-if="!collapsed"
               class="w-4 h-4 transition-transform"
-              :class="{ 'rotate-180': productsExpanded }"
+              :class="{ 'rotate-180': item.name === 'Productos' ? productsExpanded : websiteExpanded }"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -167,7 +182,7 @@ watch(
 
           <!-- Submenú -->
           <div
-            v-if="!collapsed && productsExpanded"
+            v-if="!collapsed && ((item.name === 'Productos' && productsExpanded) || (item.name === 'Gestión Web' && websiteExpanded))"
             class="ml-4 mt-1 space-y-1 border-l-2 border-slate-200 dark:border-slate-700 pl-2"
           >
             <button
@@ -175,7 +190,7 @@ watch(
               :key="subitem.name"
               class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition hover:bg-blue-700 dark:hover:bg-slate-800"
               :class="route.name === subitem.to.name ? 'bg-blue-800 dark:bg-slate-800 text-white font-semibold' : 'text-blue-100 dark:text-slate-400'"
-              @click="router.push(subitem.to)"
+              @click="router.push(subitem.to); closeMobileMenu()"
             >
               {{ subitem.name }}
             </button>
@@ -187,7 +202,7 @@ watch(
           v-else
           class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition hover:bg-blue-700 dark:hover:bg-slate-800"
           :class="isActive(item) ? 'bg-blue-800 dark:bg-slate-800 text-white font-semibold' : 'text-blue-50 dark:text-slate-300'"
-          @click="router.push(item.to)"
+          @click="router.push(item.to); closeMobileMenu()"
         >
           <span class="text-lg">{{ item.icon }}</span>
           <span v-if="!collapsed">{{ item.name }}</span>

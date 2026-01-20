@@ -51,7 +51,7 @@ const onLogin = async () => {
     </div>
 
     <!-- Left Panel - Login Form -->
-    <div class="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white dark:bg-slate-900 relative">
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white dark:bg-[#0d1117] relative">
       <!-- 3D Security Camera 1 - Top Right Corner -->
       <div class="absolute top-0 right-0 z-30 camera-container camera-right">
         <!-- Camera Mount/Bracket -->
@@ -144,7 +144,7 @@ const onLogin = async () => {
 
         <!-- Logo y Branding - Centered -->
         <div class="mb-8 text-center">
-          <div class="inline-flex items-center justify-center w-16 h-16 mb-4 bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-2">
+          <div class="inline-flex items-center justify-center w-24 h-24 mb-4 bg-white dark:bg-[#161b22] rounded-2xl shadow-lg p-2">
             <img src="/logo.png" alt="Logo" class="w-full h-full object-contain" />
           </div>
           <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">
@@ -268,21 +268,21 @@ const onLogin = async () => {
 
       <!-- Content -->
       <div class="relative z-10 flex flex-col justify-center px-16 text-white">
-        <div class="mb-8">
-          <div class="inline-flex items-center gap-3 mb-6">
-            <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+        <div class="mb-8 text-center">
+          <div class="inline-flex items-center gap-3 mb-6 text-center">
+            <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center ">
               <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
             </div>
-            <h2 class="text-2xl font-bold">Sistema de Seguridad</h2>
+            <h2 class="text-2xl font-bold ">Gestión Profesional de<br />Cámaras y Vigilancia</h2>
           </div>
 
           <h3 class="text-4xl font-bold mb-4 leading-tight">
-            Gestión Profesional de<br />Cámaras y Vigilancia
+
           </h3>
 
-          <p class="text-lg text-blue-100 mb-8 max-w-md">
+          <p class="text-lg text-blue-100 mb-0 max-w-md">
             Plataforma integral para administración de sistemas de seguridad, cotizaciones y gestión de clientes.
           </p>
         </div>
@@ -295,7 +295,7 @@ const onLogin = async () => {
               <img
                 src="/instalador.png"
                 alt="Instalador Profesional"
-                class="w-full h-64 object-contain transform group-hover:scale-105 transition-transform duration-500"
+                class="w-full h-80 object-contain transform group-hover:scale-105 transition-transform duration-500"
               />
 
               <!-- Badge -->
@@ -306,16 +306,17 @@ const onLogin = async () => {
                 Profesional
               </div>
             </div>
-
+<div class="mt-4 text-sm text-blue-200/60 text-center">
+          © 2025 Sistema de Gestión de Seguridad
+        </div>
             <!-- Card Content -->
 
           </div>
+
         </div>
 
         <!-- Version Info -->
-        <div class="mt-4 text-sm text-blue-200/60">
-          © 2024 Sistema de Gestión de Seguridad
-        </div>
+
       </div>
     </div>
   </div>

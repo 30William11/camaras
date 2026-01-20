@@ -2,6 +2,7 @@
 import { RouterView } from 'vue-router'
 import PublicNavbar from '@/components/public/PublicNavbar.vue'
 import PublicFooter from '@/components/public/PublicFooter.vue'
+import WhatsAppButton from '@/components/public/WhatsAppButton.vue'
 </script>
 
 <template>
@@ -16,5 +17,8 @@ import PublicFooter from '@/components/public/PublicFooter.vue'
 
     <!-- Footer -->
     <PublicFooter />
+
+    <!-- Floating WhatsApp Button -->
+    <WhatsAppButton />
   </div>
 </template>

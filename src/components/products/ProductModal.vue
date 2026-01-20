@@ -24,6 +24,9 @@ const form = ref({
   unit: 'unidad',
   imageFile: null,
   imageUrl: null,
+  brand: '',
+  pdfFile: null,
+  pdfUrl: null,
 
   // Pricing
   priceUsd: 0,
@@ -69,6 +72,9 @@ watch(
         unit: newVal.unit || 'unidad',
         imageFile: null,
         imageUrl: newVal.imageUrl,
+        brand: newVal.brand || '',
+        pdfFile: null,
+        pdfUrl: newVal.pdfUrl || null,
 
         // Pricing
         priceUsd: newVal.priceUsd || 0,
@@ -87,6 +93,9 @@ watch(
         unit: 'unidad',
         imageFile: null,
         imageUrl: null,
+        brand: '',
+        pdfFile: null,
+        pdfUrl: null,
 
         // Pricing Defaults
         priceUsd: 0,
@@ -106,6 +115,13 @@ const handleFileChange = (e) => {
   }
 }
 
+const handlePdfChange = (e) => {
+  const file = e.target.files[0]
+  if (file) {
+    form.value.pdfFile = file
+  }
+}
+
 const handleSubmit = () => {
   // Pass calculated values as well
   emit('save', {
@@ -119,10 +135,10 @@ const handleSubmit = () => {
 </script>
 
 <template>
-  <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
+  <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" @click.self="$emit('close')">
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
       <!-- Header -->
-      <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+      <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center flex-shrink-0">
         <h3 class="text-lg font-bold text-slate-900 dark:text-white">
           {{ isEdit ? 'Editar Producto' : 'Nuevo Producto' }}
         </h3>
@@ -131,8 +147,9 @@ const handleSubmit = () => {
         </button>
       </div>
 
-      <!-- Body -->
-      <form @submit.prevent="handleSubmit" class="p-6 space-y-4">
+      <!-- Body (Scrollable) -->
+      <form @submit.prevent="handleSubmit" class="flex flex-col flex-1 overflow-hidden">
+        <div class="p-6 space-y-4 overflow-y-auto flex-1">
         <!-- Name -->
         <div>
           <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nombre</label>
@@ -247,8 +264,8 @@ const handleSubmit = () => {
           </div>
         </div>
 
-        <!-- Category, Type, Unit -->
-        <div class="grid grid-cols-3 gap-4">
+        <!-- Category, Type, Unit, Brand -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Categoría</label>
             <select
@@ -283,6 +300,15 @@ const handleSubmit = () => {
                 {{ unit.name }} ({{ unit.abbreviation }})
               </option>
             </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Marca</label>
+            <input
+              v-model="form.brand"
+              type="text"
+              placeholder="Ej: Hikvision"
+              class="w-full rounded-lg border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
+            />
           </div>
         </div>
 
@@ -320,8 +346,37 @@ const handleSubmit = () => {
           </div>
         </div>
 
-        <!-- Actions -->
-        <div class="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
+        <!-- PDF Technical Specs -->
+        <div>
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+            Especificaciones Técnicas (PDF)
+          </label>
+          <div class="space-y-2">
+            <div v-if="form.pdfUrl || form.pdfFile" class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+              <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
+              </svg>
+              <span>{{ form.pdfFile ? form.pdfFile.name : 'PDF cargado' }}</span>
+            </div>
+            <input
+              type="file"
+              accept=".pdf"
+              @change="handlePdfChange"
+              class="block w-full text-sm text-slate-500 dark:text-slate-400
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-full file:border-0
+                file:text-sm file:font-semibold
+                file:bg-red-50 file:text-red-700
+                hover:file:bg-red-100
+                dark:file:bg-slate-700 dark:file:text-slate-300
+              "
+            />
+          </div>
+        </div>
+        </div>
+
+        <!-- Actions (Fixed Footer) -->
+        <div class="flex justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-slate-700 flex-shrink-0 bg-white dark:bg-slate-800">
           <button
             type="button"
             @click="$emit('close')"
@@ -340,3 +395,4 @@ const handleSubmit = () => {
     </div>
   </div>
 </template>
+

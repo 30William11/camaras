@@ -1,9 +1,13 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useContactMessagesStore } from '@/stores/contactMessages'
+import { useWebsiteStore } from '@/stores/website'
 import { useAlertStore } from '@/stores/alert'
+import emailjs from '@emailjs/browser'
+import { emailConfig } from '@/config/emailjs.config'
 
 const contactStore = useContactMessagesStore()
+const websiteStore = useWebsiteStore()
 const alertStore = useAlertStore()
 
 const form = ref({
@@ -15,6 +19,10 @@ const form = ref({
 
 const loading = ref(false)
 const errors = ref({})
+
+onMounted(async () => {
+  await websiteStore.loadContent()
+})
 
 const validateForm = () => {
   errors.value = {}
@@ -42,7 +50,31 @@ const handleSubmit = async () => {
   loading.value = true
 
   try {
+    // 1. Guardar en Firestore (siempre)
     await contactStore.createMessage(form.value)
+
+    // 2. Enviar email con EmailJS (si está configurado)
+    const recipientEmail = websiteStore.content.contact?.contactEmail || '11willianc30@gmail.com'
+
+    if (emailConfig.serviceId !== 'YOUR_SERVICE_ID') {
+      try {
+        await emailjs.send(
+          emailConfig.serviceId,
+          emailConfig.templateId,
+          {
+            from_name: form.value.name,
+            from_email: form.value.email,
+            phone: form.value.phone || 'No proporcionado',
+            message: form.value.message,
+            to_email: recipientEmail
+          },
+          emailConfig.publicKey
+        )
+      } catch (emailError) {
+        console.error('Error sending email:', emailError)
+        // No mostramos error al usuario, el mensaje se guardó en Firestore
+      }
+    }
 
     alertStore.success('Mensaje enviado correctamente. Nos pondremos en contacto contigo pronto.')
 
@@ -53,7 +85,8 @@ const handleSubmit = async () => {
       phone: '',
       message: ''
     }
-  } catch {
+  } catch (error) {
+    console.error('Error submitting form:', error)
     alertStore.error('Error al enviar el mensaje. Por favor intenta nuevamente.')
   } finally {
     loading.value = false

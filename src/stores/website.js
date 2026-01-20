@@ -19,7 +19,8 @@ export const useWebsiteStore = defineStore('website', () => {
             address: '',
             phone: '',
             email: '',
-            hours: ''
+            hours: '',
+            contactEmail: '11willianc30@gmail.com' // Email donde se reciben los mensajes del formulario
         },
         social: {
             facebook: '',

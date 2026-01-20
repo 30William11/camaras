@@ -11,6 +11,7 @@ import PublicHomeView from '@/views/public/PublicHomeView.vue'
 import PublicAboutView from '@/views/public/PublicAboutView.vue'
 import PublicServicesView from '@/views/public/PublicServicesView.vue'
 import PublicContactView from '@/views/public/PublicContactView.vue'
+import PublicProductsView from '@/views/public/PublicProductsView.vue'
 
 // App Views
 import LoginView from '@/views/LoginView.vue'
@@ -30,6 +31,11 @@ import AdminContentView from '@/views/admin/AdminContentView.vue'
 import AdminPublicServicesView from '@/views/admin/AdminPublicServicesView.vue'
 import AdminMessagesView from '@/views/admin/AdminMessagesView.vue'
 
+// Website Management Views
+import WebsiteConfigView from '@/views/website/WebsiteConfigView.vue'
+import WebsiteContentView from '@/views/website/WebsiteContentView.vue'
+import WebProductsView from '@/views/website/WebProductsView.vue'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -41,6 +47,7 @@ const router = createRouter({
         { path: '', name: 'public.home', component: PublicHomeView },
         { path: 'about', name: 'public.about', component: PublicAboutView },
         { path: 'services', name: 'public.services', component: PublicServicesView },
+        { path: 'productos', name: 'public.products', component: PublicProductsView },
         { path: 'contact', name: 'public.contact', component: PublicContactView },
       ],
     },
@@ -71,6 +78,11 @@ const router = createRouter({
         { path: 'products/units', name: 'app.units.index', component: UnitsListView, meta: { role: 'admin' } },
 
         { path: 'services', name: 'app.services.index', component: ServicesListView, meta: { role: 'admin' } },
+
+        // Website Management
+        { path: 'website/products', name: 'app.website.products', component: WebProductsView, meta: { role: 'admin' } },
+        { path: 'website/config', name: 'app.website.config', component: WebsiteConfigView, meta: { role: 'admin' } },
+        { path: 'website/content', name: 'app.website.content', component: WebsiteContentView, meta: { role: 'admin' } },
 
         { path: 'users', name: 'app.users.index', component: UsersListView, meta: { role: 'superadmin' } },
       ],

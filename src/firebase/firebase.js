@@ -5,12 +5,12 @@ import { getFirestore } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  apiKey: "AIzaSyCa3dq1Q4pHdw6TOFe8Ren0wPYsn1gxdco",
+  authDomain: "camaras-a9d74.firebaseapp.com",
+  projectId: "camaras-a9d74",
+  storageBucket: "camaras-a9d74.firebasestorage.app",
+  messagingSenderId: "358451032988",
+  appId: "1:358451032988:web:3a9255473ae91990390e59",
 }
 
 const app = initializeApp(firebaseConfig)

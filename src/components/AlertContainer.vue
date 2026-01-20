@@ -1,9 +1,13 @@
 <script setup>
-import { alertService } from '@/utils/alertService'
+import { storeToRefs } from 'pinia'
+import { useAlertStore } from '@/stores/alert'
 import Alert from './Alert.vue'
 
+const alertStore = useAlertStore()
+const { alerts } = storeToRefs(alertStore)
+
 const handleDismiss = (id) => {
-  alertService.dismiss(id)
+  alertStore.removeAlert(id)
 }
 </script>
 
@@ -11,7 +15,7 @@ const handleDismiss = (id) => {
   <div class="fixed top-4 right-4 z-50 max-w-md w-full space-y-2">
     <TransitionGroup name="alert">
       <Alert
-        v-for="alert in alertService.state.alerts"
+        v-for="alert in alerts"
         :key="alert.id"
         :id="alert.id"
         :message="alert.message"
